@@ -27,7 +27,7 @@ export async function POST(request: Request) {
       )
     }
 
-    const result = await db
+    const [newPost] = await db
       .insert(posts)
       .values({
         title,
@@ -36,9 +36,9 @@ export async function POST(request: Request) {
         slug,
         published: published || false,
       })
-      .execute()
+      .returning()
 
-    const postId = result.lastInsertRowid as number
+    const postId = newPost.id
 
     // Link tags if provided
     if (tagIds && Array.isArray(tagIds)) {

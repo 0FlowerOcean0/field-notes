@@ -208,7 +208,7 @@ async function seed() {
   // Insert posts
   for (const postData of seedData) {
     try {
-      const result = await db
+      const [newPost] = await db
         .insert(posts)
         .values({
           title: postData.title,
@@ -217,9 +217,9 @@ async function seed() {
           content: postData.content,
           published: postData.published,
         })
-        .execute()
+        .returning()
 
-      const postId = result.lastInsertRowid as number
+      const postId = newPost.id
 
       // Link post to tag
       const tagId = tagMap.get(postData.tag)

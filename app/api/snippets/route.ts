@@ -26,7 +26,7 @@ export async function POST(request: Request) {
       )
     }
 
-    const result = await db
+    const [newSnippet] = await db
       .insert(snippets)
       .values({
         title,
@@ -34,10 +34,10 @@ export async function POST(request: Request) {
         language: language || "typescript",
         description: description || "",
       })
-      .execute()
+      .returning()
 
     return NextResponse.json(
-      { id: result.lastInsertRowid, message: "Snippet created" },
+      { id: newSnippet.id, message: "Snippet created" },
       { status: 201 }
     )
   } catch (error) {

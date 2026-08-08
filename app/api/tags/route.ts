@@ -23,10 +23,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Name is required" }, { status: 400 })
     }
 
-    const result = await db.insert(tags).values({ name }).execute()
+    const [newTag] = await db.insert(tags).values({ name }).returning()
 
     return NextResponse.json(
-      { id: result.lastInsertRowid, message: "Tag created" },
+      { id: newTag.id, message: "Tag created" },
       { status: 201 }
     )
   } catch (error) {

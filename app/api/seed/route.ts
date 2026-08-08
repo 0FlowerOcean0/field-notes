@@ -14,8 +14,8 @@ export async function GET() {
     const tagIds: number[] = []
 
     for (const tagName of seedTags) {
-      const result = await db.insert(tags).values({ name: tagName }).execute()
-      tagIds.push(result.lastInsertRowid as number)
+      const [newTag] = await db.insert(tags).values({ name: tagName }).returning()
+      tagIds.push(newTag.id)
     }
 
     // Seed posts
@@ -153,7 +153,7 @@ alias gl="git log --oneline -20"
     ]
 
     for (const postData of seedPosts) {
-      const result = await db
+      const [newPost] = await db
         .insert(posts)
         .values({
           title: postData.title,
@@ -162,9 +162,9 @@ alias gl="git log --oneline -20"
           content: postData.content,
           published: postData.published,
         })
-        .execute()
+        .returning()
 
-      const postId = result.lastInsertRowid as number
+      const postId = newPost.id
       await db
         .insert(postTags)
         .values({ postId, tagId: tagIds[postData.tagIndex] })
